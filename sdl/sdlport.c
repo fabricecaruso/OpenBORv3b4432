@@ -64,8 +64,18 @@ void borExit(int reset)
 	appExit(0);
 }
 
+extern void loadsettings(); // FCA
+
 int main(int argc, char *argv[])
 {
+	// FCA : Set exe directory
+	char* dirsep = strrchr(argv[0], '\\');
+	if (dirsep == NULL) dirsep = strrchr(argv[0], '/');
+	if (dirsep != NULL) *dirsep = 0;
+	chdir(argv[0]);
+	loadsettings();
+	// FCA
+
 #ifndef SKIP_CODE
 	char pakname[256];
 #endif
@@ -102,11 +112,20 @@ int main(int argc, char *argv[])
 	initSDL();
 
 	packfile_mode(0);
+
+#if !WIN
+	// FCA
+	strcpy(savesDir, "/userdata/saves/openbor");
+	strcpy(logsDir, "/userdata/system/configs/openbor/Logs");
+	strcpy(screenShotsDir, "/userdata/screenshots");
+#endif
+
 #ifdef ANDROID
 	dirExists(rootDir, 1);
     chdir(rootDir);
 #endif
-	dirExists(paksDir, 1);
+    	if (argc <= 1) // FCA
+	  dirExists(paksDir, 1);
 	dirExists(savesDir, 1);
 	dirExists(logsDir, 1);
 	dirExists(screenShotsDir, 1);
@@ -121,25 +140,8 @@ int main(int argc, char *argv[])
 #endif
 
 	// Test command line argument to launch MOD
-	int romArg = 0;
-	if(argc > 1) {
-		int argl = strlen(argv[1]);
-		if(argl > 4) {
-			loadsettings();
-			memcpy(packfile, argv[1], argl);
-			if(dirExists(packfile, 0)) {
-				if(packfile[argl-1] != '/')
-					strcat(packfile, "/");
-					romArg = 1;
-			}
-			else if(memcmp( &packfile[strlen(packfile) - 4], ".pak", 4)) {
-				if(fileExists(packfile))
-					romArg = 1;
-			}
-		}
-	}
-	if(!romArg)
-		Menu();
+	if (argc > 1) strcpy(packfile, argv[1]); else // FCA : Command line
+	  Menu();
 	
 #ifndef SKIP_CODE
 	getPakName(pakname, -1);

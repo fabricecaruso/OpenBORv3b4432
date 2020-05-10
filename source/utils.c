@@ -87,10 +87,10 @@ typedef void DIR;
 #define COPY_ROOT_PATH(buf, name) strncpy(buf, "/mnt/sdcard/OpenBOR/", 20); strncat(buf, name, strlen(name)); strncat(buf, "/", 1);
 #define COPY_PAKS_PATH(buf, name) strncpy(buf, "/mnt/sdcard/OpenBOR/Paks/", 25); strncat(buf, name, strlen(name));
 #else
-#define CHECK_LOGFILE(type)  type ? fileExists("./Logs/OpenBorLog.txt") : fileExists("./Logs/ScriptLog.txt")
-#define OPEN_LOGFILE(type)   type ? fopen("./Logs/OpenBorLog.txt", "wt") : fopen("./Logs/ScriptLog.txt", "wt")
-#define APPEND_LOGFILE(type) type ? fopen("./Logs/OpenBorLog.txt", "at") : fopen("./Logs/ScriptLog.txt", "at")
-#define READ_LOGFILE(type)   type ? fopen("./Logs/OpenBorLog.txt", "rt") : fopen("./Logs/ScriptLog.txt", "rt")
+#define CHECK_LOGFILE(type)  type ? fileExists("/userdata/system/configs/openbor/Logs/OpenBorLog.txt") : fileExists("/userdata/system/configs/openbor/Logs/ScriptLog.txt")
+#define OPEN_LOGFILE(type)   type ? fopen("/userdata/system/configs/openbor/Logs/OpenBorLog.txt", "wt") : fopen("/userdata/system/configs/openbor/Logs/ScriptLog.txt", "wt")
+#define APPEND_LOGFILE(type) type ? fopen("/userdata/system/configs/openbor/Logs/OpenBorLog.txt", "at") : fopen("/userdata/system/configs/openbor/Logs/ScriptLog.txt", "at")
+#define READ_LOGFILE(type)   type ? fopen("/userdata/system/configs/openbor/Logs/OpenBorLog.txt", "rt") : fopen("/userdata/system/configs/openbor/Logs/ScriptLog.txt", "rt")
 #define COPY_ROOT_PATH(buf, name) strncpy(buf, "./", 2); strncat(buf, name, strlen(name)); strncat(buf, "/", 1);
 #define COPY_PAKS_PATH(buf, name) strncpy(buf, "./Paks/", 7); strncat(buf, name, strlen(name));
 #endif
@@ -146,6 +146,14 @@ u32 debug_time = 0;
 
 void getBasePath(char *newName, char *name, int type)
 {
+#if !WIN
+	// FCA
+	if (type == 0 && strcmp(name, "Saves") == 0)
+	{
+		strcpy(newName, "/userdata/saves/openbor/");
+		return;
+	}
+#endif
 #ifndef DC
     char buf[128] = {""};
     switch(type)
