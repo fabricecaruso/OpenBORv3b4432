@@ -28493,7 +28493,8 @@ int match_combo(int a[], s_player *p, int l)
         step = (step + MAX_SPECIAL_INPUTS) % MAX_SPECIAL_INPUTS;
 
         // old: !(a[l - 1 - j]&p->combokey[step])
-        if( ((a[l - 1 - j]&p->combokey[step]) ^ a[l - 1 - j]) ) // if input&combokey == 0 then not good btn
+        //if( ((a[l - 1 - j]&p->combokey[step]) ^ a[l - 1 - j]) ) // if input&combokey == 0 then not good btn
+		if ((a[l - 1 - j] & p->combokey[step]) == 0)
         {
             return 0;
         }
